@@ -27,3 +27,4 @@ foreach (string city in citys)
 {
     Console.WriteLine($"Miasta: {city}");
 }*/
+
