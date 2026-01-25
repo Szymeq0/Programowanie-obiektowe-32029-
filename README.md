@@ -103,7 +103,7 @@ public abstract class Produkt
     public abstract string Opis();
 }
 ```
-```cshrap
+```csharp
 public class Przewod : Produkt
 {
     public int DlugoscWMetrtach { get; set; }
