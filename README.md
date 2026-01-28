@@ -144,6 +144,9 @@ private void WyswietlProdukty()
     Console.ReadKey();
 }
 ```
+
+Dzięki temu mechanizmowi nie ma potrzeby sprawdzania typu produktu w menu — logika prezentacji danych jest rozproszona w odpowiednich klasach.
+
 7. Hermetyzacja
 
 Lokalizacja: `Models/Klient.cs`
@@ -230,9 +233,88 @@ public class PozycjaZamowienia
     }
 }
 ```
-11. Podsumowanie końcowe
+11. Wykorzystanie klas abstrakcyjnych
 
-Zrealizowany projekt spełnia wszystkie wymagania zaliczeniowe przedmiotu programowanie obiektowe.
+Lokalizacja: `Models/Produkt.cs`, `Models/Przewod.cs`, `Models/Osprzet.cs`
+
+W projekcie zastosowano klasę abstrakcyjną `Produkt`, która definiuje wspólne cechy wszystkich produktów dostępnych w hurtowni.
+Klasa ta nie może być instancjonowana bezpośrednio i wymusza implementację metody `Opis()` w klasach pochodnych.
+```csharp
+public abstract class Produkt
+{
+    public int Id { get; set; }
+    public string Nazwa { get; set; } = "";
+    public string Producent { get; set; } = "";
+    public decimal Cena { get; set; }
+
+    public abstract string Opis();
+}
+
+```
+Klasy `Przewod` oraz `Osprzet` dziedziczą po klasie `Produkt` i implementują własną logikę metody `Opis()`.
+```csharp
+public class Przewod : Produkt
+{
+    public int DlugoscWMetrtach { get; set; }
+
+    public override string Opis()
+    {
+        return $"[PRZEWÓD] {Nazwa}, {Producent}, {Cena} zł/m, {DlugoscWMetrtach} m";
+    }
+}
+```
+```csharp
+public class Osprzet : Produkt
+{
+    public int Ilosc { get; set; }
+
+    public override string Opis()
+    {
+        return $"[OSPRZĘT] {Nazwa}, {Producent}, {Cena} zł/szt, ilość: {Ilosc}";
+    }
+}
+
+```
+Zastosowanie klasy abstrakcyjnej zwiększa czytelność kodu oraz umożliwia łatwą rozbudowę aplikacji o kolejne typy produktów.
+Klasa abstrakcyjna `Produkt` została użyta nie tylko do dziedziczenia, ale również do wymuszenia wspólnego interfejsu metod dla wszystkich produktów. Dziedziczenie opisuje relację między klasami, natomiast abstrakcja definiuje sposób użycia klasy bazowej i ogranicza możliwość jej bezpośredniego tworzenia
+
+13. Wykorzystanie LINQ
+
+Lokalizacja: `Models/Zamowienie.cs`, `Services/ProduktService.cs`
+
+W projekcie zastosowano LINQ do przetwarzania kolekcji danych, co upraszcza kod oraz zwiększa jego czytelność.
+
+Przykład 1 – obliczanie łącznej wartości zamówienia
+```csharp
+public decimal Lacznawartosc =>
+    Pozycje.Sum(p => p.Wartosc);
+```
+
+Instrukcja LINQ `Sum()` agreguje wartości wszystkich pozycji zamówienia i dynamicznie oblicza jego całkowitą wartość.
+
+Przykład 2 – wyszukiwanie elementu w kolekcji
+```csharp
+var p = _produkty.FirstOrDefault(x => x.Id == id);
+```
+
+Metoda `FirstOrDefault()` umożliwia bezpieczne wyszukiwanie produktu o określonym identyfikatorze w kolekcji.
+
+Zastosowanie LINQ upraszcza operacje na danych i eliminuje konieczność ręcznego iterowania po kolekcjach.
+
+14. Interfejs użytkownika – aplikacja konsolowa
+
+Projekt posiada czytelny interfejs użytkownika w postaci aplikacji konsolowej, umożliwiający interakcję z systemem poprzez menu tekstowe.
+Użytkownik może zarządzać produktami, klientami oraz zamówieniami bezpośrednio z poziomu konsoli.
+```csharp
+Console.WriteLine("=== HURTOWNIA ELEKTRYCZNA ===");
+Console.WriteLine("1. Produkty");
+Console.WriteLine("2. Klienci");
+Console.WriteLine("3. Zamówienia");
+Console.WriteLine("0. Wyjdź");=
+```
+Choć aplikacja nie posiada interfejsu graficznego, spełnia wymagania funkcjonalne projektu i zapewnia pełną obsługę systemu.
+
+15. Podsumowanie końcowe
+
 Aplikacja wykorzystuje instrukcje warunkowe, pętle, kolekcje generyczne, pełne zasady programowania obiektowego (dziedziczenie, polimorfizm, hermetyzację) oraz trwały zapis i odczyt danych w formacie JSON.
-
 Projekt działa poprawnie, jest czytelny strukturalnie oraz gotowy do dalszej rozbudowy.
